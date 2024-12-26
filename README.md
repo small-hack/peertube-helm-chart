@@ -1,13 +1,13 @@
 # Peertube Helm Chart
 <a href="https://github.com/small-hack/generic-app-helm/releases"><img src="https://img.shields.io/github/v/release/small-hack/generic-app-helm?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
-This is a helm chart for a generic Kubernetes Application.
+This is a helm chart for Peertube
 
 
 ### TLDR
 ```bash
-helm repo add generic-app https://small-hack.github.io/generic-app-helm
-helm install generic-app/generic-app --generate-name
+helm repo add peertube https://cloudymax.github.io/peertube-helm-chart/
+helm install peertube/peertueb --generate-name
 ```
 
 ### Changing the deployment
