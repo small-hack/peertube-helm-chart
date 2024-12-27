@@ -43,12 +43,21 @@ spec:
           image: "{{ .Values.deployment.image.registry }}/{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
           {{- with .Values.deployment.containerCommand }}
-          command: 
+          command:
             {{- toYaml . | nindent 12}}
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: peertube
+              containerPort: 9000
+              protocol: TCP
+            - name: rtmp
+              containerPort: 1935
               protocol: TCP
           {{- if .Values.deployment.livenessProbe.enabled }}
           livenessProbe:
