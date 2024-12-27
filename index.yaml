@@ -3,6 +3,21 @@ entries:
   peertube:
   - apiVersion: v2
     appVersion: 0.0.0
+    created: "2024-12-27T20:16:11.891324035Z"
+    description: A peertube Helm chart for Kubernetes
+    digest: 03db58d3864216ddd44dacac968ef4e9a4b9c82ff6ba3942c8020c97b42cdcd6
+    maintainers:
+    - name: JesseBot
+      url: https://github.com/jessebot
+    - name: cloudymax
+      url: https://github.com/cloudymax
+    name: peertube
+    type: application
+    urls:
+    - https://github.com/cloudymax/peertube-helm-chart/releases/download/peertube-0.0.1/peertube-0.0.1.tgz
+    version: 0.0.1
+  - apiVersion: v2
+    appVersion: 0.0.0
     created: "2024-12-26T18:15:11.261905892Z"
     description: A peertube Helm chart for Kubernetes
     digest: f056156a16b3a5fcc07e5724a69b0080ad09c5cf0530f55a22bf3ab566d79b31
@@ -16,4 +31,4 @@ entries:
     urls:
     - https://github.com/cloudymax/peertube-helm-chart/releases/download/peertube-0.0.0/peertube-0.0.0.tgz
     version: 0.0.0
-generated: "2024-12-26T18:15:11.261913987Z"
+generated: "2024-12-27T20:16:11.891368488Z"
