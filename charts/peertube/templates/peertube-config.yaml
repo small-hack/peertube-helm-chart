@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: perrtube-config
+  name: peertube-config
   namespace: peertube
 data:
   production.yaml: |-
