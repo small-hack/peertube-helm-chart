@@ -1,6 +1,3 @@
-# Default values for generic-app.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 nameOverride: ""
 fullnameOverride: ""
 
@@ -13,17 +10,81 @@ deployment:
     # -- docker registry if not using docker.io
     registry: "docker.io"
     # -- docker repo
-    repository: nginx
+    repository: chocobozzz/peertube
     # -- image pull policy, set to Always if using latest and it changes frequently
     pullPolicy: IfNotPresent
     # -- Overrides the image tag whose default is latest
-    tag: "latest"
+    tag: production-bookworm
   # -- optional image pull secrets
   imagePullSecrets: []
   # -- command to pass to docker container
-  containerCommand: []
+  containerCommand:
+    - gosu
+    - peertube
+    - npm
+    - start
   # -- env list for deployment main container
-  env: []
+  env:
+    - name: PEERTUBE_LOG_LEVEL
+      value: debug
+    - name: POSTGRES_USER
+      value: "peertube"
+    - name: POSTGRES_DB
+      value: "peertube"
+    - name: PEERTUBE_DB_HOSTNAME
+      value: "peertube-postgres-rw"
+    - name: PEERTUBE_DB_USERNAME
+      value: "peertube"
+    - name: PEERTUBE_DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: peertube-pgsql-credentials
+          key: password
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: peertube-pgsql-credentials
+          key: password
+    - name: PEERTUBE_TRUST_PROXY
+      value: '["10.0.0.0/8"]'
+    - name: PEERTUBE_REDIS_HOSTNAME
+      value: "valkey-primary"
+    - name: PEERTUBE_REDIS_AUTH
+      valueFrom:
+        secretKeyRef:
+          name: peertube-valkey-credentials
+          key: valkey-password
+    - name: PEERTUBE_WEBSERVER_HOSTNAME
+      value: peertube.buildstar.online
+    - name: PEERTUBE_WEBSERVER_PORT
+      value: "443"
+    - name: PEERTUBE_WEBSERVER_HTTPS
+      value: "true"
+    - name: PEERTUBE_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: peertube-secret
+          key: password
+    - name: PEERTUBE_ADMIN_EMAIL
+      value: "admin@cloudydev.net"
+    - name: PEERTUBE_OBJECT_STORAGE_ENABLED
+      value: "false"
+    - name: PEERTUBE_OBJECT_STORAGE_ENDPOINT
+      value: ""
+    - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC
+      value: "public-read"
+    - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE
+      value: "private"
+    - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          name: peertube-s3-videos-credentials
+          key: accesskey
+    - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: peertube-s3-videos-credentials
+          key: secretkey
   # -- env from list for deployment main container
   envFrom: []
   # -- extra init containers for the default deployment
@@ -47,18 +108,27 @@ deployment:
     # runAsUser: 1000
 
   # -- Additional volumes on the output Deployment definition.
-  volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
+  volumes:
+    - name: peertube-config
+      configMap:
+        name: peertube-config
+    - name: custom-env-vars
+      configMap:
+        name: custom-env-vars
+    - name: peertube-data
+      persistentVolumeClaim:
+        claimName: peertube-data
 
   # -- Additional volumeMounts on the output Deployment definition.
-  volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
-
+  volumeMounts:
+    - name: peertube-config
+      mountPath: /config/production.yaml
+      subPath: production.yaml
+    - name: peertube-data
+      mountPath: /data
+    - name: custom-env-vars
+      mountPath: /config/custom-environment-variables.yaml
+      subPath: custom-environment-variables.yaml
   # -- node selector for deployment
   nodeSelector: {}
 
@@ -69,31 +139,27 @@ deployment:
   affinity: {}
 
   # -- resources for the deployment
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  resources:
+    limits:
+      cpu: 4
+      memory: 4096Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi
 
   # -- livenessProbe for the deployment
   livenessProbe:
     enabled: true
     httpGet:
       path: /
-      port: http
+      port: peertube
 
   # -- readinessProbe for the deployment
   readinessProbe:
     enabled: true
     httpGet:
       path: /
-      port: http
+      port: peertube
 
   # -- autoscaling for the deployment
   autoscaling:
@@ -191,7 +257,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: "peertube-sa"
 
 service:
   enabled: true
@@ -199,17 +265,24 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/connection-proxy-header: "keep-alive"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: ALLOWALL";
+      proxy_set_header Host $host;
   hosts:
-    - host: chart-example.local
+    - host: peertube.buildstar.online
       paths:
         - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+          pathType: Prefix
+  tls:
+    - secretName: peertube-tls
+      hosts:
+        - chart-example.local
