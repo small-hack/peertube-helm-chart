@@ -9,7 +9,7 @@ For an example of intended use please see https://github.com/small-hack/argocd-a
 Installation via helm:
 ```bash
 helm repo add peertube https://cloudymax.github.io/peertube-helm-chart/
-helm install peertube/peertueb --generate-name
+helm install peertube/peertube --generate-name
 ```
 
 
