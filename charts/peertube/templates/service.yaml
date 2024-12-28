@@ -8,10 +8,22 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - name: http
       protocol: TCP
-      name: http
+      port: 80
+      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+    - name: peertube
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+    - name: rtmp
+      protocol: TCP
+      port: 1935
+      targetPort: 1935
   selector:
     {{- include "generic-app.selectorLabels" . | nindent 4 }}
 {{- end }}
