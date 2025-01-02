@@ -1,8 +1,11 @@
 nameOverride: ""
+
+# -- full name override for all peertube resources
 fullnameOverride: ""
 
 # -- replica count if not using autoscaling
 replicaCount: 1
+
 image:
   # -- docker registry if not using docker.io
   registry: "docker.io"
@@ -12,22 +15,28 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is latest
   tag: production-bookworm
+
 # -- optional image pull secrets
 imagePullSecrets: []
+
 # -- command to pass to docker container
 containerCommand:
   - gosu
   - peertube
   - npm
   - start
+
 # -- env list for deployment main container
 extraEnv: []
 
 envFrom: []
+
 # -- extra init containers for the default deployment
 initcontainers: {}
+
 # -- extra pod annotations for the deployment
 podAnnotations: {}
+
 # -- extra pod labels for the deployment
 podLabels: {}
 
@@ -66,6 +75,7 @@ volumeMounts:
   - name: custom-env-vars
     mountPath: /config/custom-environment-variables.yaml
     subPath: custom-environment-variables.yaml
+
 # -- node selector for deployment
 nodeSelector: {}
 
@@ -84,22 +94,22 @@ resources:
     cpu: 100m
     memory: 512Mi
 
-# -- livenessProbe for the deployment
 livenessProbe:
+  # -- enable livenessProbe for the deployment
   enabled: true
   httpGet:
     path: /
     port: peertube
 
-# -- readinessProbe for the deployment
 readinessProbe:
+  # -- enable readinessProbe for the deployment
   enabled: true
   httpGet:
     path: /
     port: peertube
 
-# -- autoscaling for the deployment
 autoscaling:
+  # -- enable autoscaling for the deployment
   enabled: false
   minReplicas: 1
   maxReplicas: 100
@@ -107,13 +117,13 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Automatically mount a ServiceAccount's API credentials?
+  # -- Automatically mount a ServiceAccount's API credentials?
   automount: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: "peertube-sa"
 
@@ -123,7 +133,9 @@ service:
   port: 80
 
 ingress:
+  # -- enable ingress from outside the cluster to this peertube instance
   enabled: true
+  # -- ingress controller class name
   className: "nginx"
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -179,23 +191,40 @@ peertube:
     # -- get the credentials for s3 from an existing Kubernetes Secret
     existingSecret: ""
     existingSecretKeys:
+      # -- key in existing secret for s3 endpoint
       endpoint: ""
+      # -- key in existing secret for s3 access_key_id
       access_key_id: ""
+      # -- key in existing secret for s3 secret_access_key
       secret_access_key: ""
 
   smtp:
+    # -- mail hostname
     host: ""
-    user: ""
-    password: ""
+    # -- mail port
     port: ""
-    tls: ""
+    # -- mail username
+    user: ""
+    # -- mail password
+    password: ""
+    # -- mail tls setting
+    tls: true
+    # -- mail disable starttls
     disable_starttls: false
+    # -- email address to send emails from
     from_address: ""
-    # -- use an existing Kubernetes Secret to connect to SMTP
+    # -- use an existing Kubernetes Secret to connect to SMTP host
+    # if set, ignores above smtp.host/port/username/password
     existingSecret: ""
+    # keys in an existing Kubernetes Secret to use for connecting to SMTP host
     existingSecretKeys:
+      # -- key in existing secret for smtp hostname
       host: ""
+      # -- key in existing secret for smtp port
+      port: ""
+      # -- key in existing secret for smtp username
       username: ""
+      # -- key in existing secret for smtp password
       password: ""
 
 # external database credentials

@@ -156,6 +156,34 @@ spec:
                   name: {{ .Values.peertube.s3.existingSecret }}
                   key: {{ .Values.peertube.s3.existingSecretKeys.secret_access_key }}
 
+            # smtp info
+            - name: PEERTUBE_SMTP_FROM
+              value: {{ .Values.peertube.smtp.from_address }}
+            - name: PEERTUBE_SMTP_TLS
+              value: {{ .Values.peertube.smtp.tls | quote }}
+            - name: PEERTUBE_SMTP_DISABLE_STARTTLS
+              value: {{ .Values.peertube.smtp.disable_starttls | quote }}
+            - name: PEERTUBE_SMTP_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.smtp.existingSecret | default "peertube-smtp"}}
+                  key: {{ .Values.peertube.smtp.existingSecretKeys.host }}
+            - name: PEERTUBE_SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.smtp.existingSecret | default "peertube-smtp"}}
+                  key: {{ .Values.peertube.smtp.existingSecretKeys.port }}
+            - name: PEERTUBE_SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.smtp.existingSecret | default "peertube-smtp"}}
+                  key: {{ .Values.peertube.smtp.existingSecretKeys.username }}
+            - name: PEERTUBE_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.smtp.existingSecret | default "peertube-smtp"}}
+                  key: {{ .Values.peertube.smtp.existingSecretKeys.password }}
+
           {{- with .Values.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
