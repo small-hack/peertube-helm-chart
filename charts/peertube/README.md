@@ -74,13 +74,16 @@ A peertube Helm chart for Kubernetes
 | peertube.s3.upload_acl_private | string | `"private"` |  |
 | peertube.s3.upload_acl_public | string | `"public-read"` |  |
 | peertube.secret | string | `""` | set peertube's secret |
+| peertube.smtp.disable_starttls | bool | `false` |  |
 | peertube.smtp.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to SMTP |
 | peertube.smtp.existingSecretKeys.host | string | `""` |  |
 | peertube.smtp.existingSecretKeys.password | string | `""` |  |
 | peertube.smtp.existingSecretKeys.username | string | `""` |  |
+| peertube.smtp.from_address | string | `""` |  |
 | peertube.smtp.host | string | `""` |  |
 | peertube.smtp.password | string | `""` |  |
 | peertube.smtp.port | string | `""` |  |
+| peertube.smtp.tls | string | `""` |  |
 | peertube.smtp.user | string | `""` |  |
 | peertube.trust_proxy | string | `"[\"10.0.0.0/8\"]"` | set peertube's trusted proxies |
 | peertube.webserver_hostname | string | `"chart-example.local"` | set peertube's hostname |

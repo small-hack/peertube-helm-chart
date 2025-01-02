@@ -188,6 +188,9 @@ peertube:
     user: ""
     password: ""
     port: ""
+    tls: ""
+    disable_starttls: false
+    from_address: ""
     # -- use an existing Kubernetes Secret to connect to SMTP
     existingSecret: ""
     existingSecretKeys:
