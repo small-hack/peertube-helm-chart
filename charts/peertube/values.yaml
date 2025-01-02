@@ -1,252 +1,110 @@
 nameOverride: ""
 fullnameOverride: ""
 
-deployment:
-  # -- enable the deployment vs job vs cronjob
+# -- replica count if not using autoscaling
+replicaCount: 1
+image:
+  # -- docker registry if not using docker.io
+  registry: "docker.io"
+  # -- docker repo
+  repository: chocobozzz/peertube
+  # -- image pull policy, set to Always if using latest and it changes frequently
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is latest
+  tag: production-bookworm
+# -- optional image pull secrets
+imagePullSecrets: []
+# -- command to pass to docker container
+containerCommand:
+  - gosu
+  - peertube
+  - npm
+  - start
+# -- env list for deployment main container
+extraEnv: []
+
+envFrom: []
+# -- extra init containers for the default deployment
+initcontainers: {}
+# -- extra pod annotations for the deployment
+podAnnotations: {}
+# -- extra pod labels for the deployment
+podLabels: {}
+
+# -- pod securityContext deployment's main container
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- securityContext whole deployment
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# -- Additional volumes on the output Deployment definition.
+volumes:
+  - name: peertube-config
+    configMap:
+      name: peertube-config
+  - name: custom-env-vars
+    configMap:
+      name: custom-env-vars
+  - name: peertube-data
+    persistentVolumeClaim:
+      claimName: peertube-data
+
+# -- Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+  - name: peertube-config
+    mountPath: /config/production.yaml
+    subPath: production.yaml
+  - name: peertube-data
+    mountPath: /data
+  - name: custom-env-vars
+    mountPath: /config/custom-environment-variables.yaml
+    subPath: custom-environment-variables.yaml
+# -- node selector for deployment
+nodeSelector: {}
+
+# -- tolerations of taints on a node
+tolerations: []
+
+# -- affinity settings for the deployment
+affinity: {}
+
+# -- resources for the deployment
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+# -- livenessProbe for the deployment
+livenessProbe:
   enabled: true
-  # -- replica count if not using autoscaling
-  replicaCount: 1
-  image:
-    # -- docker registry if not using docker.io
-    registry: "docker.io"
-    # -- docker repo
-    repository: chocobozzz/peertube
-    # -- image pull policy, set to Always if using latest and it changes frequently
-    pullPolicy: IfNotPresent
-    # -- Overrides the image tag whose default is latest
-    tag: production-bookworm
-  # -- optional image pull secrets
-  imagePullSecrets: []
-  # -- command to pass to docker container
-  containerCommand:
-    - gosu
-    - peertube
-    - npm
-    - start
-  # -- env list for deployment main container
-  env:
-    - name: PEERTUBE_LOG_LEVEL
-      value: debug
-    - name: POSTGRES_USER
-      value: "peertube"
-    - name: POSTGRES_DB
-      value: "peertube"
-    - name: PEERTUBE_DB_HOSTNAME
-      value: "peertube-postgres-rw"
-    - name: PEERTUBE_DB_USERNAME
-      value: "peertube"
-    - name: PEERTUBE_DB_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: peertube-pgsql-credentials
-          key: password
-    - name: POSTGRES_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: peertube-pgsql-credentials
-          key: password
-    - name: PEERTUBE_TRUST_PROXY
-      value: '["10.0.0.0/8"]'
-    - name: PEERTUBE_REDIS_HOSTNAME
-      value: "valkey-primary"
-    - name: PEERTUBE_REDIS_AUTH
-      valueFrom:
-        secretKeyRef:
-          name: peertube-valkey-credentials
-          key: valkey-password
-    - name: PEERTUBE_WEBSERVER_HOSTNAME
-      value: peertube.buildstar.online
-    - name: PEERTUBE_WEBSERVER_PORT
-      value: "443"
-    - name: PEERTUBE_WEBSERVER_HTTPS
-      value: "true"
-    - name: PEERTUBE_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: peertube-secret
-          key: password
-    - name: PEERTUBE_ADMIN_EMAIL
-      value: "admin@cloudydev.net"
-    - name: PEERTUBE_OBJECT_STORAGE_ENABLED
-      value: "false"
-    - name: PEERTUBE_OBJECT_STORAGE_ENDPOINT
-      value: ""
-    - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC
-      value: "public-read"
-    - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE
-      value: "private"
-    - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_ACCESS_KEY_ID
-      valueFrom:
-        secretKeyRef:
-          name: peertube-s3-videos-credentials
-          key: accesskey
-    - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_SECRET_ACCESS_KEY
-      valueFrom:
-        secretKeyRef:
-          name: peertube-s3-videos-credentials
-          key: secretkey
-  # -- env from list for deployment main container
-  envFrom: []
-  # -- extra init containers for the default deployment
-  initcontainers: {}
-  # -- extra pod annotations for the deployment
-  podAnnotations: {}
-  # -- extra pod labels for the deployment
-  podLabels: {}
+  httpGet:
+    path: /
+    port: peertube
 
-  # -- pod securityContext deployment's main container
-  podSecurityContext: {}
-    # fsGroup: 2000
+# -- readinessProbe for the deployment
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /
+    port: peertube
 
-  # -- securityContext whole deployment
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  # -- Additional volumes on the output Deployment definition.
-  volumes:
-    - name: peertube-config
-      configMap:
-        name: peertube-config
-    - name: custom-env-vars
-      configMap:
-        name: custom-env-vars
-    - name: peertube-data
-      persistentVolumeClaim:
-        claimName: peertube-data
-
-  # -- Additional volumeMounts on the output Deployment definition.
-  volumeMounts:
-    - name: peertube-config
-      mountPath: /config/production.yaml
-      subPath: production.yaml
-    - name: peertube-data
-      mountPath: /data
-    - name: custom-env-vars
-      mountPath: /config/custom-environment-variables.yaml
-      subPath: custom-environment-variables.yaml
-  # -- node selector for deployment
-  nodeSelector: {}
-
-  # -- tolerations of taints on a node
-  tolerations: []
-
-  # -- affinity settings for the deployment
-  affinity: {}
-
-  # -- resources for the deployment
-  resources:
-    limits:
-      cpu: 4000m
-      memory: 4Gi
-    requests:
-      cpu: 100m
-      memory: 512Mi
-
-  # -- livenessProbe for the deployment
-  livenessProbe:
-    enabled: true
-    httpGet:
-      path: /
-      port: peertube
-
-  # -- readinessProbe for the deployment
-  readinessProbe:
-    enabled: true
-    httpGet:
-      path: /
-      port: peertube
-
-  # -- autoscaling for the deployment
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
-job:
-  # -- enable a job
+# -- autoscaling for the deployment
+autoscaling:
   enabled: false
-  # -- replica count if not using autoscaling
-  replicaCount: 1
-  # -- restart policy if the job fails; can be never, or always
-  restartPolicy: never
-  image:
-    # -- docker registry if not using docker.io
-    registry: "docker.io"
-    # -- docker repo
-    repository: nginx
-    # -- image pull policy, set to Always if using latest and it changes frequently
-    pullPolicy: IfNotPresent
-    # -- Overrides the image tag whose default is latest
-    tag: "latest"
-  # -- optional image pull secrets
-  imagePullSecrets: []
-  # -- command to pass to docker container
-  containerCommand: []
-  # -- env list for job main container
-  env: []
-  # -- env from list for job main container
-  envFrom: []
-  # -- extra init containers for the default job
-  initcontainers: {}
-  # -- extra pod annotations for the job
-  podAnnotations: {}
-  # -- extra pod labels for the job
-  podLabels: {}
-
-  # -- pod securityContext job's main container
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  # -- securityContext whole job
-  securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  # -- Additional volumes on the output job definition.
-  volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
-
-  # -- Additional volumeMounts on the output job definition.
-  volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
-
-  # -- node selector for job
-  nodeSelector: {}
-
-  # -- tolerations of taints on a node
-  tolerations: []
-
-  # -- affinity settings for the job
-  affinity: {}
-
-  # -- resources for the job
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -278,7 +136,7 @@ ingress:
       more_set_headers "X-Frame-Options: ALLOWALL";
       proxy_set_header Host $host;
   hosts:
-    - host: peertube.buildstar.online
+    - host: chart-example.local
       paths:
         - path: /
           pathType: Prefix
@@ -286,3 +144,93 @@ ingress:
     - secretName: peertube-tls
       hosts:
         - chart-example.local
+
+peertube:
+  # -- set peertube's logging level
+  log_level: debug
+  # -- set peertube's trusted proxies
+  trust_proxy: '["10.0.0.0/8"]'
+  # -- set peertube's hostname
+  webserver_hostname: chart-example.local
+  # -- set peertube's port
+  webserver_port: 443
+  # -- enable https for peertube web frontend
+  webserver_https: true
+  # -- email address of peertube admin user
+  admin_email: ""
+  # -- set peertube's secret
+  secret: ""
+  # -- use an existing Kubernetes Secret for Peetube's secret
+  existingSecret: ""
+  # -- a key in an existing Kubernetes Secret for Peetube's secret
+  existingSecretKey: "secret"
+
+  s3:
+    # -- enable object storage, s3, for peertube
+    enabled: false
+    # -- s3 endpoint to connect to for peertube storage
+    endpoint: ""
+    upload_acl_public: "public-read"
+    upload_acl_private: "private"
+    # -- get the credentials for s3 from an existing Kubernetes Secret
+    existingSecret: ""
+    existingSecretKeys:
+      endpoint: ""
+      access_key_id: ""
+      secret_access_key: ""
+
+  smtp:
+    host: ""
+    user: ""
+    password: ""
+    port: ""
+    # -- use an existing Kubernetes Secret to connect to SMTP
+    existingSecret: ""
+    existingSecretKeys:
+      host: ""
+      username: ""
+      password: ""
+
+# external database credentials
+externalDatabase:
+  # -- enable external database, if postgresql.enabled=false is set
+  enabled: true
+  # -- postgresql hostname
+  hostname: "peertube-postgres-rw"
+  # -- postgresql database name
+  database: "peertube"
+  # -- postgresql username
+  username: "peertube"
+  # -- postgresql password
+  password: ""
+  # -- use an existing Kubernetes Secret to connect to PostgreSQL
+  existingSecret: ""
+  # keys to use in an existing Kubernetes Secret to connect to PostgreSQL
+  existingSecretKeys:
+    hostname: ""
+    database: ""
+    username: ""
+    password: ""
+
+externalRedis:
+  # -- enable external valkey/redis, if valkey.enabled=false is set
+  enabled: true
+  # -- hostname of external valkey/redis
+  hostname: "valkey-primary"
+  # -- valkey/redis password
+  password: ""
+  # -- use an existing Kubernetes Secret to connect to Redis/Valkey
+  existingSecret: ""
+  # -- key to use in an existing Kubernetes Secret to connect to Redis/Valkey
+  existingSecretKey: valkey-password
+
+
+## coming soon: bitnami subchart for postgresql
+# postgresql:
+#   # -- enable the postgresql subchart
+#   enabled: false
+
+## coming soon: bitnami subchart for valkey
+# valkey:
+#   # -- enable the valkey (alternative to redis) subchart
+#   enabled: false

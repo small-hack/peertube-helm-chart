@@ -1,4 +1,4 @@
-{{- if .Values.deployment.enabled }}
+{{- if .Values.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,43 +6,43 @@ metadata:
   labels:
     {{- include "generic-app.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.deployment.autoscaling.enabled }}
-  replicas: {{ .Values.deployment.replicaCount }}
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "generic-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.deployment.podAnnotations }}
+      {{- with .Values.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "generic-app.labels" . | nindent 8 }}
-        {{- with .Values.deployment.podLabels }}
+        {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.deployment.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "generic-app.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.deployment.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
 
-      {{- if .Values.deployment.initContainers }}
+      {{- if .Values.initContainers }}
       initContainers:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.deployment.securityContext | nindent 12 }}
-          image: "{{ .Values.deployment.image.registry }}/{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
-          {{- with .Values.deployment.containerCommand }}
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerCommand }}
           command:
             {{- toYaml . | nindent 12}}
           {{- end }}
@@ -59,41 +59,120 @@ spec:
             - name: rtmp
               containerPort: 1935
               protocol: TCP
-          {{- if .Values.deployment.livenessProbe.enabled }}
+          {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
-            {{- toYaml .Values.deployment.livenessProbe | nindent 12 }}
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
           {{- end }}
-          {{- if .Values.deployment.readinessProbe.enabled }}
+          {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
-            {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           {{- end }}
           resources:
-            {{- toYaml .Values.deployment.resources | nindent 12 }}
-          {{- with .Values.deployment.volumeMounts }}
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.deployment.env }}
           env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.deployment.envFrom }}
+            {{- with .Values.extraEnv }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            - name: PEERTUBE_LOG_LEVEL
+              value: {{ .Values.peertube.log_level }}
+            - name: PEERTUBE_TRUST_PROXY
+              value: {{ .Values.peertube.trust_proxy }}
+            - name: PEERTUBE_WEBSERVER_HOSTNAME
+              value: {{ .Values.peertube.webserver_hostname }}
+            - name: PEERTUBE_WEBSERVER_PORT
+              value: {{ .Values.peertube.webserver_port | quote }}
+            - name: PEERTUBE_WEBSERVER_HTTPS
+              value: {{ .Values.peertube.webserver_https | quote }}
+            - name: PEERTUBE_ADMIN_EMAIL
+              value: {{ .Values.peertube.admin_email }}
+            - name: PEERTUBE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.existingSecret | default "peertube-secret" }}
+                  key: {{ .Values.peertube.existingSecretKey | default "secret" }}
+
+            # db info
+            - name: PEERTUBE_DB_HOSTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "hostname" }}
+            - name: PEERTUBE_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "username" }}
+            - name: PEERTUBE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "password" }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "username" }}
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "database" }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "password" }}
+
+            # redis info
+            - name: PEERTUBE_REDIS_HOSTNAME
+              value: {{ .Values.externalRedis.hostname }}
+            - name: PEERTUBE_REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalRedis.existingSecret | default "peertube-valkey-secret" }}
+                  key: {{ .Values.externalRedis.existingSecretKey | default "password" }}
+
+            # s3 info
+            - name: PEERTUBE_OBJECT_STORAGE_ENABLED
+              value: {{ .Values.peertube.s3.enabled | quote }}
+            - name: PEERTUBE_OBJECT_STORAGE_ENDPOINT
+              value: {{ .Values.peertube.s3.endpoint }}
+            - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC
+              value: {{ .Values.peertube.s3.upload_acl_public }}
+            - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE
+              value: {{ .Values.peertube.s3.upload_acl_private }}
+            - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.s3.existingSecret }}
+                  key: {{ .Values.peertube.s3.existingSecretKeys.access_key_id }}
+            - name: PEERTUBE_OBJECT_STORAGE_CREDENTIALS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.s3.existingSecret }}
+                  key: {{ .Values.peertube.s3.existingSecretKeys.secret_access_key }}
+
+          {{- with .Values.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.deployment.volumes }}
+      {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.deployment.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.deployment.affinity }}
+      {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.deployment.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
