@@ -29,11 +29,11 @@ A peertube Helm chart for Kubernetes
 | externalDatabase.hostname | string | `"peertube-postgres-rw"` | postgresql hostname |
 | externalDatabase.password | string | `""` | postgresql password |
 | externalDatabase.username | string | `"peertube"` | postgresql username |
-| externalRedis.enabled | bool | `true` | enable external valkey/redis, if valkey.enabled=false is set |
-| externalRedis.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to Redis/Valkey |
-| externalRedis.existingSecretKey | string | `"valkey-password"` | key to use in an existing Kubernetes Secret to connect to Redis/Valkey |
-| externalRedis.hostname | string | `"valkey-primary"` | hostname of external valkey/redis |
-| externalRedis.password | string | `""` | valkey/redis password |
+| externalValkey.enabled | bool | `true` | enable external valkey/redis, if valkey.enabled=false is set |
+| externalValkey.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to Redis/Valkey |
+| externalValkey.existingSecretKey | string | `"valkey-password"` | key to use in an existing Kubernetes Secret to connect to Redis/Valkey |
+| externalValkey.hostname | string | `"valkey-primary"` | hostname of external valkey/redis |
+| externalValkey.password | string | `""` | valkey/redis password |
 | extraEnv | list | `[]` | env list for deployment main container |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy, set to Always if using latest and it changes frequently |
@@ -63,12 +63,14 @@ A peertube Helm chart for Kubernetes
 | peertube.existingSecret | string | `""` | use an existing Kubernetes Secret for Peetube's secret |
 | peertube.existingSecretKey | string | `"secret"` | a key in an existing Kubernetes Secret for Peetube's secret |
 | peertube.log_level | string | `"debug"` | set peertube's logging level |
+| peertube.s3.access_key_id | string | `""` | access key id for connecting to s3 |
 | peertube.s3.enabled | bool | `false` | enable object storage, s3, for peertube |
 | peertube.s3.endpoint | string | `""` | s3 endpoint to connect to for peertube storage |
 | peertube.s3.existingSecret | string | `""` | get the credentials for s3 from an existing Kubernetes Secret |
 | peertube.s3.existingSecretKeys.access_key_id | string | `""` |  |
 | peertube.s3.existingSecretKeys.endpoint | string | `""` |  |
 | peertube.s3.existingSecretKeys.secret_access_key | string | `""` |  |
+| peertube.s3.secret_access_key | string | `""` | secret access key id for connecting to s3 |
 | peertube.s3.upload_acl_private | string | `"private"` |  |
 | peertube.s3.upload_acl_public | string | `"public-read"` |  |
 | peertube.secret | string | `""` | set peertube's secret |

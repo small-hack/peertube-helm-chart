@@ -170,6 +170,10 @@ peertube:
     enabled: false
     # -- s3 endpoint to connect to for peertube storage
     endpoint: ""
+    # -- access key id for connecting to s3
+    access_key_id: ""
+    # -- secret access key id for connecting to s3
+    secret_access_key: ""
     upload_acl_public: "public-read"
     upload_acl_private: "private"
     # -- get the credentials for s3 from an existing Kubernetes Secret
@@ -212,7 +216,7 @@ externalDatabase:
     username: ""
     password: ""
 
-externalRedis:
+externalValkey:
   # -- enable external valkey/redis, if valkey.enabled=false is set
   enabled: true
   # -- hostname of external valkey/redis
