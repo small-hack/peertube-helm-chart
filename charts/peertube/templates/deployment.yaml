@@ -99,12 +99,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
-                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "hostname" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.hostname | default "hostname" }}
             - name: PEERTUBE_DB_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
-                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "username" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.username | default "username" }}
             - name: PEERTUBE_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -114,12 +114,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
-                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "username" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.username | default "username" }}
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
-                  key: {{ .Values.externalDatabase.existingSecretKeys.password | default "database" }}
+                  key: {{ .Values.externalDatabase.existingSecretKeys.database | default "database" }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
