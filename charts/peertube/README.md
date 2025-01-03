@@ -1,6 +1,6 @@
 # peertube
 
-![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A peertube Helm chart for Kubernetes
 
@@ -8,38 +8,42 @@ A peertube Helm chart for Kubernetes
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| JesseBot |  | <https://github.com/jessebot> |
 | cloudymax |  | <https://github.com/cloudymax> |
+| JesseBot |  | <https://github.com/jessebot> |
 
 ## Values
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| deployment.affinity | object | `{}` | affinity settings for the deployment |
-| deployment.autoscaling | object | `{"enabled":false,"maxReplicas":100,"minReplicas":1,"targetCPUUtilizationPercentage":80}` | autoscaling for the deployment |
-| deployment.containerCommand | list | `["gosu","peertube","npm","start"]` | command to pass to docker container |
-| deployment.enabled | bool | `true` | enable the deployment vs job vs cronjob |
-| deployment.env | list | `[{"name":"PEERTUBE_LOG_LEVEL","value":"debug"},{"name":"POSTGRES_USER","value":"peertube"},{"name":"POSTGRES_DB","value":"peertube"},{"name":"PEERTUBE_DB_HOSTNAME","value":"peertube-postgres-rw"},{"name":"PEERTUBE_DB_USERNAME","value":"peertube"},{"name":"PEERTUBE_DB_PASSWORD","valueFrom":{"secretKeyRef":{"key":"password","name":"peertube-pgsql-credentials"}}},{"name":"POSTGRES_PASSWORD","valueFrom":{"secretKeyRef":{"key":"password","name":"peertube-pgsql-credentials"}}},{"name":"PEERTUBE_TRUST_PROXY","value":"[\"10.0.0.0/8\"]"},{"name":"PEERTUBE_REDIS_HOSTNAME","value":"valkey-primary"},{"name":"PEERTUBE_REDIS_AUTH","valueFrom":{"secretKeyRef":{"key":"valkey-password","name":"peertube-valkey-credentials"}}},{"name":"PEERTUBE_WEBSERVER_HOSTNAME","value":"peertube.buildstar.online"},{"name":"PEERTUBE_WEBSERVER_PORT","value":"443"},{"name":"PEERTUBE_WEBSERVER_HTTPS","value":"true"},{"name":"PEERTUBE_SECRET","valueFrom":{"secretKeyRef":{"key":"password","name":"peertube-secret"}}},{"name":"PEERTUBE_ADMIN_EMAIL","value":"admin@cloudydev.net"},{"name":"PEERTUBE_OBJECT_STORAGE_ENABLED","value":"false"},{"name":"PEERTUBE_OBJECT_STORAGE_ENDPOINT","value":""},{"name":"PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC","value":"public-read"},{"name":"PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE","value":"private"},{"name":"PEERTUBE_OBJECT_STORAGE_CREDENTIALS_ACCESS_KEY_ID","valueFrom":{"secretKeyRef":{"key":"accesskey","name":"peertube-s3-videos-credentials"}}},{"name":"PEERTUBE_OBJECT_STORAGE_CREDENTIALS_SECRET_ACCESS_KEY","valueFrom":{"secretKeyRef":{"key":"secretkey","name":"peertube-s3-videos-credentials"}}}]` | env list for deployment main container |
-| deployment.envFrom | list | `[]` | env from list for deployment main container |
-| deployment.image.pullPolicy | string | `"IfNotPresent"` | image pull policy, set to Always if using latest and it changes frequently |
-| deployment.image.registry | string | `"docker.io"` | docker registry if not using docker.io |
-| deployment.image.repository | string | `"chocobozzz/peertube"` | docker repo |
-| deployment.image.tag | string | `"production-bookworm"` | Overrides the image tag whose default is latest |
-| deployment.imagePullSecrets | list | `[]` | optional image pull secrets |
-| deployment.initcontainers | object | `{}` | extra init containers for the default deployment |
-| deployment.livenessProbe | object | `{"enabled":true,"httpGet":{"path":"/","port":"peertube"}}` | livenessProbe for the deployment |
-| deployment.nodeSelector | object | `{}` | node selector for deployment |
-| deployment.podAnnotations | object | `{}` | extra pod annotations for the deployment |
-| deployment.podLabels | object | `{}` | extra pod labels for the deployment |
-| deployment.podSecurityContext | object | `{}` | pod securityContext deployment's main container |
-| deployment.readinessProbe | object | `{"enabled":true,"httpGet":{"path":"/","port":"peertube"}}` | readinessProbe for the deployment |
-| deployment.replicaCount | int | `1` | replica count if not using autoscaling |
-| deployment.resources | object | `{"limits":{"cpu":4,"memory":"4096Mi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | resources for the deployment |
-| deployment.securityContext | object | `{}` | securityContext whole deployment |
-| deployment.tolerations | list | `[]` | tolerations of taints on a node |
-| deployment.volumeMounts | list | `[{"mountPath":"/config/production.yaml","name":"peertube-config","subPath":"production.yaml"},{"mountPath":"/data","name":"peertube-data"},{"mountPath":"/config/custom-environment-variables.yaml","name":"custom-env-vars","subPath":"custom-environment-variables.yaml"}]` | Additional volumeMounts on the output Deployment definition. |
-| deployment.volumes | list | `[{"configMap":{"name":"peertube-config"},"name":"peertube-config"},{"configMap":{"name":"custom-env-vars"},"name":"custom-env-vars"},{"name":"peertube-data","persistentVolumeClaim":{"claimName":"peertube-data"}}]` | Additional volumes on the output Deployment definition. |
-| fullnameOverride | string | `""` |  |
+| affinity | object | `{}` | affinity settings for the deployment |
+| autoscaling.enabled | bool | `false` | enable autoscaling for the deployment |
+| autoscaling.maxReplicas | int | `100` |  |
+| autoscaling.minReplicas | int | `1` |  |
+| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| containerCommand | list | `["gosu","peertube","npm","start"]` | command to pass to docker container |
+| envFrom | list | `[]` |  |
+| externalDatabase.database | string | `"peertube"` | postgresql database name |
+| externalDatabase.enabled | bool | `true` | enable external database, if postgresql.enabled=false is set |
+| externalDatabase.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to PostgreSQL |
+| externalDatabase.existingSecretKeys.database | string | `""` |  |
+| externalDatabase.existingSecretKeys.hostname | string | `""` |  |
+| externalDatabase.existingSecretKeys.password | string | `""` |  |
+| externalDatabase.existingSecretKeys.username | string | `""` |  |
+| externalDatabase.hostname | string | `"peertube-postgres-rw"` | postgresql hostname |
+| externalDatabase.password | string | `""` | postgresql password |
+| externalDatabase.username | string | `"peertube"` | postgresql username |
+| externalValkey.enabled | bool | `true` | enable external valkey/redis, if valkey.enabled=false is set |
+| externalValkey.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to Redis/Valkey |
+| externalValkey.existingSecretKey | string | `"valkey-password"` | key to use in an existing Kubernetes Secret to connect to Redis/Valkey |
+| externalValkey.hostname | string | `"valkey-primary"` | hostname of external valkey/redis |
+| externalValkey.password | string | `""` | valkey/redis password |
+| extraEnv | list | `[]` | env list for deployment main container |
+| fullnameOverride | string | `""` | full name override for all peertube resources |
+| image.pullPolicy | string | `"IfNotPresent"` | image pull policy, set to Always if using latest and it changes frequently |
+| image.registry | string | `"docker.io"` | docker registry if not using docker.io |
+| image.repository | string | `"chocobozzz/peertube"` | docker repo |
+| image.tag | string | `"production-bookworm"` | Overrides the image tag whose default is latest |
+| imagePullSecrets | list | `[]` | optional image pull secrets |
 | ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-prod"` |  |
 | ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"more_set_headers \"X-Frame-Options: ALLOWALL\";\nproxy_set_header Host $host;\n"` |  |
 | ingress.annotations."nginx.ingress.kubernetes.io/connection-proxy-header" | string | `"keep-alive"` |  |
@@ -47,43 +51,69 @@ A peertube Helm chart for Kubernetes
 | ingress.annotations."nginx.ingress.kubernetes.io/force-ssl-redirect" | string | `"true"` |  |
 | ingress.annotations."nginx.ingress.kubernetes.io/proxy-body-size" | string | `"500m"` |  |
 | ingress.annotations."nginx.ingress.kubernetes.io/ssl-redirect" | string | `"true"` |  |
-| ingress.className | string | `"nginx"` |  |
-| ingress.enabled | bool | `true` |  |
-| ingress.hosts[0].host | string | `"peertube.buildstar.online"` |  |
+| ingress.className | string | `"nginx"` | ingress controller class name |
+| ingress.enabled | bool | `true` | enable ingress from outside the cluster to this peertube instance |
+| ingress.hosts[0].host | string | `"chart-example.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
 | ingress.tls[0].hosts[0] | string | `"chart-example.local"` |  |
 | ingress.tls[0].secretName | string | `"peertube-tls"` |  |
-| job.affinity | object | `{}` | affinity settings for the job |
-| job.containerCommand | list | `[]` | command to pass to docker container |
-| job.enabled | bool | `false` | enable a job |
-| job.env | list | `[]` | env list for job main container |
-| job.envFrom | list | `[]` | env from list for job main container |
-| job.image.pullPolicy | string | `"IfNotPresent"` | image pull policy, set to Always if using latest and it changes frequently |
-| job.image.registry | string | `"docker.io"` | docker registry if not using docker.io |
-| job.image.repository | string | `"nginx"` | docker repo |
-| job.image.tag | string | `"latest"` | Overrides the image tag whose default is latest |
-| job.imagePullSecrets | list | `[]` | optional image pull secrets |
-| job.initcontainers | object | `{}` | extra init containers for the default job |
-| job.nodeSelector | object | `{}` | node selector for job |
-| job.podAnnotations | object | `{}` | extra pod annotations for the job |
-| job.podLabels | object | `{}` | extra pod labels for the job |
-| job.podSecurityContext | object | `{}` | pod securityContext job's main container |
-| job.replicaCount | int | `1` | replica count if not using autoscaling |
-| job.resources | object | `{}` | resources for the job |
-| job.restartPolicy | string | `"never"` | restart policy if the job fails; can be never, or always |
-| job.securityContext | object | `{}` | securityContext whole job |
-| job.tolerations | list | `[]` | tolerations of taints on a node |
-| job.volumeMounts | list | `[]` | Additional volumeMounts on the output job definition. |
-| job.volumes | list | `[]` | Additional volumes on the output job definition. |
+| initcontainers | object | `{}` | extra init containers for the default deployment |
+| livenessProbe | object | `{"httpGet":{"path":"/","port":"peertube"}}` | enable livenessProbe for the deployment |
 | nameOverride | string | `""` |  |
+| nodeSelector | object | `{}` | node selector for deployment |
+| peertube.admin.email | string | `""` | email address of peertube admin user |
+| peertube.admin.existingSecret | string | `""` | use an existing Kubernetes Secret for Peertube's admin credentials |
+| peertube.admin.existingSecretKeys.email | string | `""` | a key in an existing Kubernetes Secret for Peertube's admin user email |
+| peertube.admin.existingSecretKeys.password | string | `""` | a key in an existing Kubernetes Secret for Peertube's admin password |
+| peertube.admin.password | string | `""` | initial peertube of peertube admin password |
+| peertube.existingSecret | string | `""` | use an existing Kubernetes Secret for Peertube's secret |
+| peertube.existingSecretKey | string | `"secret"` | a key in an existing Kubernetes Secret for Peertube's secret |
+| peertube.log_level | string | `"debug"` | set peertube's logging level |
+| peertube.s3.access_key_id | string | `""` | access key id for connecting to s3 |
+| peertube.s3.enabled | bool | `false` | enable object storage, s3, for peertube |
+| peertube.s3.endpoint | string | `""` | s3 endpoint to connect to for peertube storage |
+| peertube.s3.existingSecret | string | `""` | get the credentials for s3 from an existing Kubernetes Secret |
+| peertube.s3.existingSecretKeys.access_key_id | string | `""` | key in existing secret for s3 access_key_id |
+| peertube.s3.existingSecretKeys.endpoint | string | `""` | key in existing secret for s3 endpoint |
+| peertube.s3.existingSecretKeys.secret_access_key | string | `""` | key in existing secret for s3 secret_access_key |
+| peertube.s3.secret_access_key | string | `""` | secret access key id for connecting to s3 |
+| peertube.s3.upload_acl_private | string | `"private"` |  |
+| peertube.s3.upload_acl_public | string | `"public-read"` |  |
+| peertube.secret | string | `""` | set peertube's secret |
+| peertube.smtp.disable_starttls | bool | `false` | mail disable starttls |
+| peertube.smtp.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to SMTP host if set, ignores above smtp.host/port/username/password |
+| peertube.smtp.existingSecretKeys.host | string | `""` | key in existing secret for smtp hostname |
+| peertube.smtp.existingSecretKeys.password | string | `""` | key in existing secret for smtp password |
+| peertube.smtp.existingSecretKeys.port | string | `""` | key in existing secret for smtp port |
+| peertube.smtp.existingSecretKeys.username | string | `""` | key in existing secret for smtp username |
+| peertube.smtp.from_address | string | `""` | email address to send emails from |
+| peertube.smtp.host | string | `""` | mail hostname |
+| peertube.smtp.password | string | `""` | mail password |
+| peertube.smtp.port | string | `""` | mail port |
+| peertube.smtp.tls | bool | `true` | mail tls setting |
+| peertube.smtp.user | string | `""` | mail username |
+| peertube.trust_proxy | string | `"10.0.0.0/8"` | set peertube's trusted proxies |
+| peertube.webserver_hostname | string | `"chart-example.local"` | set peertube's hostname |
+| peertube.webserver_https | bool | `true` | enable https for peertube web frontend |
+| peertube.webserver_port | int | `443` | set peertube's port |
+| podAnnotations | object | `{}` | extra pod annotations for the deployment |
+| podLabels | object | `{}` | extra pod labels for the deployment |
+| podSecurityContext | object | `{}` | pod securityContext deployment's main container |
+| readinessProbe | object | `{"httpGet":{"path":"/","port":"peertube"}}` | enable readinessProbe for the deployment |
+| replicaCount | int | `1` | replica count if not using autoscaling |
+| resources | object | `{"limits":{"cpu":"4000m","memory":"4Gi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | resources for the deployment |
+| securityContext | object | `{}` | securityContext whole deployment |
 | service.enabled | bool | `true` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
-| serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.automount | bool | `true` |  |
-| serviceAccount.create | bool | `true` |  |
-| serviceAccount.name | string | `"peertube-sa"` |  |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| serviceAccount.automount | bool | `true` | Automatically mount a ServiceAccount's API credentials? |
+| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| serviceAccount.name | string | `"peertube-sa"` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| tolerations | list | `[]` | tolerations of taints on a node |
+| volumeMounts | list | `[{"mountPath":"/config/production.yaml","name":"peertube-config","subPath":"production.yaml"},{"mountPath":"/data","name":"peertube-data"},{"mountPath":"/config/custom-environment-variables.yaml","name":"custom-env-vars","subPath":"custom-environment-variables.yaml"}]` | Additional volumeMounts on the output Deployment definition. |
+| volumes | list | `[{"configMap":{"name":"peertube-config"},"name":"peertube-config"},{"configMap":{"name":"custom-env-vars"},"name":"custom-env-vars"},{"name":"peertube-data","persistentVolumeClaim":{"claimName":"peertube-data"}}]` | Additional volumes on the output Deployment definition. |
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
+Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
