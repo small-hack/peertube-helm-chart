@@ -164,8 +164,10 @@ spec:
               value: {{ .Values.peertube.smtp.from_address }}
             - name: PEERTUBE_SMTP_TLS
               value: {{ .Values.peertube.smtp.tls | quote }}
+            {{ if .Values.peertube.smtp.disable_starttls }}
             - name: PEERTUBE_SMTP_DISABLE_STARTTLS
               value: {{ .Values.peertube.smtp.disable_starttls | quote }}
+            {{- end }}
             - name: PEERTUBE_SMTP_HOSTNAME
               valueFrom:
                 secretKeyRef:
