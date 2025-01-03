@@ -87,7 +87,7 @@ spec:
             - name: PEERTUBE_WEBSERVER_HTTPS
               value: {{ .Values.peertube.webserver_https | quote }}
             - name: PEERTUBE_ADMIN_EMAIL
-              value: {{ .Values.peertube.admin_email }}
+              value: {{ .Values.peertube.admin_email | quote }}
             - name: PEERTUBE_SECRET
               valueFrom:
                 secretKeyRef:
