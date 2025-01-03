@@ -94,16 +94,14 @@ resources:
     cpu: 100m
     memory: 512Mi
 
+# -- enable livenessProbe for the deployment
 livenessProbe:
-  # -- enable livenessProbe for the deployment
-  enabled: true
   httpGet:
     path: /
     port: peertube
 
+# -- enable readinessProbe for the deployment
 readinessProbe:
-  # -- enable readinessProbe for the deployment
-  enabled: true
   httpGet:
     path: /
     port: peertube
