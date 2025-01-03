@@ -86,8 +86,21 @@ spec:
               value: {{ .Values.peertube.webserver_port | quote }}
             - name: PEERTUBE_WEBSERVER_HTTPS
               value: {{ .Values.peertube.webserver_https | quote }}
+
+            # admin user
             - name: PEERTUBE_ADMIN_EMAIL
-              value: {{ .Values.peertube.admin_email | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.admin.existingSecret | default "peertube-admin-secret" }}
+                  key: {{ .Values.peertube.admin.existingSecretKeys.email | default "email" }}
+
+            - name: PT_INITIAL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.admin.existingSecret | default "peertube-admin-secret" }}
+                  key: {{ .Values.peertube.admin.existingSecretKeys.password | default "password" }}
+
+            # secret for... something peertube requires?
             - name: PEERTUBE_SECRET
               valueFrom:
                 secretKeyRef:

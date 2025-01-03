@@ -1,6 +1,6 @@
 # peertube
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A peertube Helm chart for Kubernetes
 
@@ -8,8 +8,8 @@ A peertube Helm chart for Kubernetes
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| JesseBot |  | <https://github.com/jessebot> |
 | cloudymax |  | <https://github.com/cloudymax> |
+| JesseBot |  | <https://github.com/jessebot> |
 
 ## Values
 
@@ -59,14 +59,16 @@ A peertube Helm chart for Kubernetes
 | ingress.tls[0].hosts[0] | string | `"chart-example.local"` |  |
 | ingress.tls[0].secretName | string | `"peertube-tls"` |  |
 | initcontainers | object | `{}` | extra init containers for the default deployment |
-| livenessProbe.enabled | bool | `true` | enable livenessProbe for the deployment |
-| livenessProbe.httpGet.path | string | `"/"` |  |
-| livenessProbe.httpGet.port | string | `"peertube"` |  |
+| livenessProbe | object | `{"httpGet":{"path":"/","port":"peertube"}}` | enable livenessProbe for the deployment |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` | node selector for deployment |
-| peertube.admin_email | string | `""` | email address of peertube admin user |
-| peertube.existingSecret | string | `""` | use an existing Kubernetes Secret for Peetube's secret |
-| peertube.existingSecretKey | string | `"secret"` | a key in an existing Kubernetes Secret for Peetube's secret |
+| peertube.admin.email | string | `""` | email address of peertube admin user |
+| peertube.admin.existingSecret | string | `""` | use an existing Kubernetes Secret for Peertube's admin credentials |
+| peertube.admin.existingSecretKeys.email | string | `""` | a key in an existing Kubernetes Secret for Peertube's admin user email |
+| peertube.admin.existingSecretKeys.password | string | `""` | a key in an existing Kubernetes Secret for Peertube's admin password |
+| peertube.admin.password | string | `""` | initial peertube of peertube admin password |
+| peertube.existingSecret | string | `""` | use an existing Kubernetes Secret for Peertube's secret |
+| peertube.existingSecretKey | string | `"secret"` | a key in an existing Kubernetes Secret for Peertube's secret |
 | peertube.log_level | string | `"debug"` | set peertube's logging level |
 | peertube.s3.access_key_id | string | `""` | access key id for connecting to s3 |
 | peertube.s3.enabled | bool | `false` | enable object storage, s3, for peertube |
@@ -91,16 +93,14 @@ A peertube Helm chart for Kubernetes
 | peertube.smtp.port | string | `""` | mail port |
 | peertube.smtp.tls | bool | `true` | mail tls setting |
 | peertube.smtp.user | string | `""` | mail username |
-| peertube.trust_proxy | string | `"[\"10.0.0.0/8\"]"` | set peertube's trusted proxies |
+| peertube.trust_proxy | string | `"10.0.0.0/8"` | set peertube's trusted proxies |
 | peertube.webserver_hostname | string | `"chart-example.local"` | set peertube's hostname |
 | peertube.webserver_https | bool | `true` | enable https for peertube web frontend |
 | peertube.webserver_port | int | `443` | set peertube's port |
 | podAnnotations | object | `{}` | extra pod annotations for the deployment |
 | podLabels | object | `{}` | extra pod labels for the deployment |
 | podSecurityContext | object | `{}` | pod securityContext deployment's main container |
-| readinessProbe.enabled | bool | `true` | enable readinessProbe for the deployment |
-| readinessProbe.httpGet.path | string | `"/"` |  |
-| readinessProbe.httpGet.port | string | `"peertube"` |  |
+| readinessProbe | object | `{"httpGet":{"path":"/","port":"peertube"}}` | enable readinessProbe for the deployment |
 | replicaCount | int | `1` | replica count if not using autoscaling |
 | resources | object | `{"limits":{"cpu":"4000m","memory":"4Gi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | resources for the deployment |
 | securityContext | object | `{}` | securityContext whole deployment |

@@ -166,14 +166,25 @@ peertube:
   webserver_port: 443
   # -- enable https for peertube web frontend
   webserver_https: true
-  # -- email address of peertube admin user
-  admin_email: ""
   # -- set peertube's secret
   secret: ""
-  # -- use an existing Kubernetes Secret for Peetube's secret
+  # -- use an existing Kubernetes Secret for Peertube's secret
   existingSecret: ""
-  # -- a key in an existing Kubernetes Secret for Peetube's secret
+  # -- a key in an existing Kubernetes Secret for Peertube's secret
   existingSecretKey: "secret"
+
+  admin:
+    # -- email address of peertube admin user
+    email: ""
+    # -- initial peertube of peertube admin password
+    password: ""
+    # -- use an existing Kubernetes Secret for Peertube's admin credentials
+    existingSecret: ""
+    existingSecretKeys:
+      # -- a key in an existing Kubernetes Secret for Peertube's admin user email
+      email: ""
+      # -- a key in an existing Kubernetes Secret for Peertube's admin password
+      password: ""
 
   s3:
     # -- enable object storage, s3, for peertube
