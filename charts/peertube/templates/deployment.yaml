@@ -127,6 +127,7 @@ spec:
                   key: {{ .Values.externalDatabase.existingSecretKeys.password | default "password" }}
 
             # redis info
+            {{- if .Values.externalValkey.enabled }}
             - name: PEERTUBE_REDIS_HOSTNAME
               value: {{ .Values.externalValkey.hostname }}
             - name: PEERTUBE_REDIS_AUTH
@@ -134,8 +135,10 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.externalValkey.existingSecret | default "peertube-valkey-secret" }}
                   key: {{ .Values.externalValkey.existingSecretKey | default "password" }}
+            {{- end }}
 
             # s3 info
+            {{- if .Values.peertube.s3.enabled }}
             - name: PEERTUBE_OBJECT_STORAGE_ENABLED
               value: {{ .Values.peertube.s3.enabled | quote }}
             - name: PEERTUBE_OBJECT_STORAGE_ENDPOINT
@@ -154,6 +157,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.peertube.s3.existingSecret }}
                   key: {{ .Values.peertube.s3.existingSecretKeys.secret_access_key }}
+            {{- end }}
 
             # smtp info
             - name: PEERTUBE_SMTP_FROM
