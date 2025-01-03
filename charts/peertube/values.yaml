@@ -173,6 +173,7 @@ peertube:
   # -- a key in an existing Kubernetes Secret for Peertube's secret
   existingSecretKey: "secret"
 
+  # parameters for creating an initial admin password
   admin:
     # -- email address of peertube admin user
     email: ""
