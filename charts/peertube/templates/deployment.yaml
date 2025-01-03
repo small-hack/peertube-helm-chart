@@ -128,12 +128,12 @@ spec:
 
             # redis info
             - name: PEERTUBE_REDIS_HOSTNAME
-              value: {{ .Values.externalRedis.hostname }}
+              value: {{ .Values.externalValkey.hostname }}
             - name: PEERTUBE_REDIS_AUTH
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalRedis.existingSecret | default "peertube-valkey-secret" }}
-                  key: {{ .Values.externalRedis.existingSecretKey | default "password" }}
+                  name: {{ .Values.externalValkey.existingSecret | default "peertube-valkey-secret" }}
+                  key: {{ .Values.externalValkey.existingSecretKey | default "password" }}
 
             # s3 info
             - name: PEERTUBE_OBJECT_STORAGE_ENABLED
