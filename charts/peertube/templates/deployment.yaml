@@ -155,7 +155,14 @@ spec:
             - name: PEERTUBE_OBJECT_STORAGE_ENABLED
               value: {{ .Values.peertube.s3.enabled | quote }}
             - name: PEERTUBE_OBJECT_STORAGE_ENDPOINT
+              {{- if .Values.peertube.s3.existingSecretKeys.endpoint }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.s3.existingSecret }}
+                  key: {{ .Values.peertube.s3.existingSecretKeys.endpoint }}
+              {{- else -}}
               value: {{ .Values.peertube.s3.endpoint }}
+              {{- end }}
             - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC
               value: {{ .Values.peertube.s3.upload_acl_public }}
             - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE
