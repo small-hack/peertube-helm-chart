@@ -1,6 +1,6 @@
 # peertube
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 A peertube Helm chart for Kubernetes
 
@@ -76,10 +76,18 @@ A peertube Helm chart for Kubernetes
 | peertube.s3.existingSecret | string | `""` | get the credentials for s3 from an existing Kubernetes Secret |
 | peertube.s3.existingSecretKeys.access_key_id | string | `""` | key in existing secret for s3 access_key_id |
 | peertube.s3.existingSecretKeys.endpoint | string | `""` | key in existing secret for s3 endpoint |
+| peertube.s3.existingSecretKeys.original_video_files_bucket | string | `""` | key in existing secret for s3 bucket for original video files |
 | peertube.s3.existingSecretKeys.secret_access_key | string | `""` | key in existing secret for s3 secret_access_key |
+| peertube.s3.existingSecretKeys.streaming_playlists_bucket | string | `""` | key in existing secret for s3 bucket for streaming playlists |
+| peertube.s3.existingSecretKeys.user_exports_bucket | string | `""` | key in existing secret for s3 bucket for user exports |
+| peertube.s3.existingSecretKeys.web_videos_bucket | string | `""` | key in existing secret for s3 bucket for web videos |
+| peertube.s3.original_video_files_bucket | string | `""` | s3 bucket for peertube to store original video files |
 | peertube.s3.secret_access_key | string | `""` | secret access key id for connecting to s3 |
+| peertube.s3.streaming_playlists_bucket | string | `""` | s3 bucket for peertube to store streaming playlists |
 | peertube.s3.upload_acl_private | string | `"private"` |  |
 | peertube.s3.upload_acl_public | string | `"public-read"` |  |
+| peertube.s3.user_exports_bucket | string | `""` | s3 bucket for peertube to store user exports |
+| peertube.s3.web_videos_bucket | string | `""` | s3 bucket for peertube to store web videos |
 | peertube.secret | string | `""` | set peertube's secret |
 | peertube.smtp.disable_starttls | bool | `false` | mail disable starttls |
 | peertube.smtp.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to SMTP host if set, ignores above smtp.host/port/username/password |
