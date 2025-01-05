@@ -192,6 +192,14 @@ peertube:
     enabled: false
     # -- s3 endpoint to connect to for peertube storage
     endpoint: ""
+    # -- s3 bucket for peertube to store streaming playlists
+    streaming_playlists_bucket: ""
+    # -- s3 bucket for peertube to store web videos
+    web_videos_bucket: ""
+    # -- s3 bucket for peertube to store user exports
+    user_exports_bucket: ""
+    # -- s3 bucket for peertube to store original video files
+    original_video_files_bucket: ""
     # -- access key id for connecting to s3
     access_key_id: ""
     # -- secret access key id for connecting to s3
@@ -203,6 +211,14 @@ peertube:
     existingSecretKeys:
       # -- key in existing secret for s3 endpoint
       endpoint: ""
+      # -- key in existing secret for s3 bucket for streaming playlists
+      streaming_playlists_bucket: ""
+      # -- key in existing secret for s3 bucket for web videos
+      web_videos_bucket: ""
+      # -- key in existing secret for s3 bucket for user exports
+      user_exports_bucket: ""
+      # -- key in existing secret for s3 bucket for original video files
+      original_video_files_bucket: ""
       # -- key in existing secret for s3 access_key_id
       access_key_id: ""
       # -- key in existing secret for s3 secret_access_key

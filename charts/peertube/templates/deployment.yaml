@@ -163,6 +163,42 @@ spec:
               {{- else -}}
               value: {{ .Values.peertube.s3.endpoint }}
               {{- end }}
+            - name: PEERTUBE_OBJECT_STORAGE_STREAMING_PLAYLISTS_BUCKET_NAME
+              {{- if .Values.peertube.s3.existingSecretKeys.streaming_playlists_bucket }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.s3.existingSecret }}
+                  key: {{ .Values.peertube.s3.existingSecretKeys.streaming_playlists_bucket }}
+              {{- else -}}
+              value: {{ .Values.peertube.s3.streaming_playlists_bucket }}
+              {{- end }}
+            - name: PEERTUBE_OBJECT_STORAGE_WEB_VIDEOS_BUCKET_NAME
+              {{- if .Values.peertube.s3.existingSecretKeys.web_videos_bucket }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.s3.existingSecret }}
+                  key: {{ .Values.peertube.s3.existingSecretKeys.web_videos_bucket }}
+              {{- else -}}
+              value: {{ .Values.peertube.s3.web_videos_bucket }}
+              {{- end }}
+            - name: PEERTUBE_OBJECT_STORAGE_USER_EXPORTS_BUCKET_NAME
+              {{- if .Values.peertube.s3.existingSecretKeys.user_exports_bucket }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.s3.existingSecret }}
+                  key: {{ .Values.peertube.s3.existingSecretKeys.user_exports_bucket }}
+              {{- else -}}
+              value: {{ .Values.peertube.s3.user_exports_bucket }}
+              {{- end }}
+            - name: PEERTUBE_OBJECT_STORAGE_ORIGINAL_VIDEO_FILES_BUCKET_NAME
+              {{- if .Values.peertube.s3.existingSecretKeys.original_video_files_bucket }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.peertube.s3.existingSecret }}
+                  key: {{ .Values.peertube.s3.existingSecretKeys.original_video_files_bucket }}
+              {{- else -}}
+              value: {{ .Values.peertube.s3.original_video_files_bucket }}
+              {{- end }}
             - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC
               value: {{ .Values.peertube.s3.upload_acl_public }}
             - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE
