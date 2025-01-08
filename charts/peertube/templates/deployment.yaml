@@ -268,9 +268,9 @@ spec:
         - name: peertube-data
           persistentVolumeClaim:
             {{- if .Values.persistence.existingClaim }}
-            claimName: {{ include "peertube.fullname" . }}
-            {{- else }}
             claimName: {{ .Values.persistence.existingClaim }}
+            {{- else }}
+            claimName: {{ include "peertube.fullname" . }}
             {{- end }}
         {{- end }}
         {{- with .Values.extraVolumes }}
