@@ -23,6 +23,15 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
+
+{{- define "peertube.valkey.fullname" -}}
+{{- printf "%s-%s" .Release.Name "valkey" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "peertube.postgresql.fullname" -}}
+{{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{/*
 Create chart name and version as used by the chart label.
 */}}
@@ -60,3 +69,31 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Get the valkey secret name
+*/}}
+{{- define "peertube.valkey.secretName" -}}
+{{- if .Values.valkey.auth.existingSecret }}
+    {{- printf "%s" (tpl .Values.valkey.auth.existingSecret $) -}}
+{{- else if .Values.valkey.existingSecret }}
+    {{- printf "%s" (tpl .Values.valkey.existingSecret $) -}}
+{{- else -}}
+    {{- printf "%s-valkey" (tpl .Release.Name $) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the postgresql secret.
+*/}}
+{{- define "peertube.postgresql.secretName" -}}
+{{- if (and (or .Values.postgresql.enabled .Values.postgresql.postgresqlHostname) .Values.postgresql.auth.existingSecret) }}
+    {{- printf "%s" (tpl .Values.postgresql.auth.existingSecret $) -}}
+{{- else if and .Values.postgresql.enabled (not .Values.postgresql.auth.existingSecret) -}}
+    {{- printf "%s-postgresql" (tpl .Release.Name $) -}}
+{{- else if and .Values.externalDatabase.enabled .Values.externalDatabase.existingSecret -}}
+    {{- printf "%s" (tpl .Values.externalDatabase.existingSecret $) -}}
+{{- else -}}
+    {{- printf "%s" (include "common.names.fullname" .) -}}
+{{- end -}}
+{{- end -}}

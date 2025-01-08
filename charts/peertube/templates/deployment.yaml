@@ -111,32 +111,32 @@ spec:
             - name: PEERTUBE_DB_HOSTNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  name: {{ template "peertube.postgresql.secretName" . }}
                   key: {{ .Values.externalDatabase.existingSecretKeys.hostname | default "hostname" }}
             - name: PEERTUBE_DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  name: {{ template "peertube.postgresql.secretName" . }}
                   key: {{ .Values.externalDatabase.existingSecretKeys.username | default "username" }}
             - name: PEERTUBE_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  name: {{ template "peertube.postgresql.secretName" . }}
                   key: {{ .Values.externalDatabase.existingSecretKeys.password | default "password" }}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  name: {{ template "peertube.postgresql.secretName" . }}
                   key: {{ .Values.externalDatabase.existingSecretKeys.username | default "username" }}
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  name: {{ template "peertube.postgresql.secretName" . }}
                   key: {{ .Values.externalDatabase.existingSecretKeys.database | default "database" }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalDatabase.existingSecret | default "peertube-db-secret" }}
+                  name: {{ template "peertube.postgresql.secretName" . }}
                   key: {{ .Values.externalDatabase.existingSecretKeys.password | default "password" }}
 
             # redis info
@@ -146,7 +146,7 @@ spec:
             - name: PEERTUBE_REDIS_AUTH
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalValkey.existingSecret | default "peertube-valkey-secret" }}
+                  name: {{ template "peertube.redis.secretName" . }}
                   key: {{ .Values.externalValkey.existingSecretKey | default "password" }}
             {{- end }}
 
