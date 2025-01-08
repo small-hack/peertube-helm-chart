@@ -1,16 +1,17 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   annotations:
-    k8up.io/backup: "true"
+    {{- toYaml .Values.persistence.annotations | nindent 4 }}
   labels:
-    app.kubernetes.io/name: peertube
-  name: peertube-data
-  namespace: peertube
+    {{- include "peertube.labels" . | nindent 4 }}
+  name: {{ include "peertube.fullname" . }}
 spec:
   accessModes:
-    - ReadWriteOnce
+    {{- toYaml .Values.persistence.accessModes | nindent 4 }}
   resources:
     requests:
-      storage: 10Gi
-  storageClassName: local-path
+      storage: {{ .Values.persistence.storage }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+{{- end }}

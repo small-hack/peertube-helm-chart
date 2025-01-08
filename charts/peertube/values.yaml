@@ -76,14 +76,28 @@ volumeMounts:
     mountPath: /config/custom-environment-variables.yaml
     subPath: custom-environment-variables.yaml
 
-# -- node selector for deployment
-nodeSelector: {}
-
 # -- tolerations of taints on a node
 tolerations: []
 
 # -- affinity settings for the deployment
 affinity: {}
+
+# -- node selector for deployment
+nodeSelector: {}
+
+persistence:
+  # -- enable using a persistent volume claim
+  enabled: false
+  # -- annotations to apply to the persistent volume claim
+  annotations: {}
+  # -- access mode of the persistent volume claim, e.g. ReadWriteOnce
+  accessModes: []
+  # -- storage class of the persistent volume claim
+  storageClassName: ""
+  # -- size of the persistent volume claim
+  storage: "10Gi"
+  # -- use an exisitng persistent volume claim
+  existingClaim: ""
 
 # -- resources for the deployment
 resources:
