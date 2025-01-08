@@ -68,8 +68,16 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            - name: peertube-config
+              mountPath: /config/production.yaml
+              subPath: production.yaml
+            - name: peertube-data
+              mountPath: /data
+            - name: custom-env-vars
+              mountPath: /config/custom-environment-variables.yaml
+              subPath: custom-environment-variables.yaml
+          {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
@@ -249,10 +257,25 @@ spec:
           envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: peertube-config
+          configMap:
+            name: peertube-config
+        - name: custom-env-vars
+          configMap:
+            name: custom-env-vars
+        {{- if .Values.persistence.enabled }}
+        - name: peertube-data
+          persistentVolumeClaim:
+            {{- if .Values.persistence.existingClaim }}
+            claimName: {{ include "peertube.fullname" . }}
+            {{- else }}
+            claimName: {{ .Values.persistence.existingClaim }}
+            {{- end }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

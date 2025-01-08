@@ -54,27 +54,10 @@ securityContext: {}
   # runAsUser: 1000
 
 # -- Additional volumes on the output Deployment definition.
-volumes:
-  - name: peertube-config
-    configMap:
-      name: peertube-config
-  - name: custom-env-vars
-    configMap:
-      name: custom-env-vars
-  - name: peertube-data
-    persistentVolumeClaim:
-      claimName: peertube-data
+extraVolumes: []
 
 # -- Additional volumeMounts on the output Deployment definition.
-volumeMounts:
-  - name: peertube-config
-    mountPath: /config/production.yaml
-    subPath: production.yaml
-  - name: peertube-data
-    mountPath: /data
-  - name: custom-env-vars
-    mountPath: /config/custom-environment-variables.yaml
-    subPath: custom-environment-variables.yaml
+extraVolumeMounts: []
 
 # -- tolerations of taints on a node
 tolerations: []
