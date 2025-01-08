@@ -2,6 +2,30 @@ apiVersion: v1
 entries:
   peertube:
   - apiVersion: v2
+    appVersion: v7.0.1-bookworm
+    created: "2025-01-08T08:26:47.049057659Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 16.0.4
+    - condition: valkey.enabled
+      name: valkey
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 2.2.2
+    description: A Helm chart for deploying PeerTube on Kubernetes
+    digest: 71780ce6f87fd0c9b7b8f6796b7821a2c4a554c0b533eea6f4c1f5f95982a1f1
+    maintainers:
+    - name: cloudymax
+      url: https://github.com/cloudymax
+    - name: JesseBot
+      url: https://github.com/jessebot
+    name: peertube
+    type: application
+    urls:
+    - https://github.com/small-hack/peertube-helm-chart/releases/download/peertube-0.4.0/peertube-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
     appVersion: 0.0.0
     created: "2025-01-05T14:15:58.592311973Z"
     description: A peertube Helm chart for Kubernetes
@@ -106,4 +130,4 @@ entries:
     urls:
     - https://github.com/cloudymax/peertube-helm-chart/releases/download/peertube-0.0.0/peertube-0.0.0.tgz
     version: 0.0.0
-generated: "2025-01-05T14:15:58.592346728Z"
+generated: "2025-01-08T08:26:47.04908465Z"
