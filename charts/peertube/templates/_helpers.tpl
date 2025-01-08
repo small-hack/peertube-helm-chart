@@ -76,8 +76,8 @@ Get the valkey secret name
 {{- define "peertube.valkey.secretName" -}}
 {{- if .Values.valkey.auth.existingSecret }}
     {{- printf "%s" (tpl .Values.valkey.auth.existingSecret $) -}}
-{{- else if .Values.valkey.existingSecret }}
-    {{- printf "%s" (tpl .Values.valkey.existingSecret $) -}}
+{{- else if .Values.externalValkey.existingSecret }}
+    {{- printf "%s" (tpl .Values.externalValkey.existingSecret $) -}}
 {{- else -}}
     {{- printf "%s-valkey" (tpl .Release.Name $) -}}
 {{- end -}}
