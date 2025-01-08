@@ -1,8 +1,8 @@
 # peertube
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v7.0.1-bookworm](https://img.shields.io/badge/AppVersion-v7.0.1--bookworm-informational?style=flat-square)
 
-A peertube Helm chart for Kubernetes
+A Helm chart for deploying PeerTube on Kubernetes
 
 ## Maintainers
 
@@ -10,6 +10,13 @@ A peertube Helm chart for Kubernetes
 | ---- | ------ | --- |
 | cloudymax |  | <https://github.com/cloudymax> |
 | JesseBot |  | <https://github.com/jessebot> |
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.0.4 |
+| oci://registry-1.docker.io/bitnamicharts | valkey | 2.2.2 |
 
 ## Values
 
@@ -23,7 +30,7 @@ A peertube Helm chart for Kubernetes
 | containerCommand | list | `["gosu","peertube","npm","start"]` | command to pass to docker container |
 | envFrom | list | `[]` |  |
 | externalDatabase.database | string | `"peertube"` | postgresql database name |
-| externalDatabase.enabled | bool | `true` | enable external database, if postgresql.enabled=false is set |
+| externalDatabase.enabled | bool | `false` | enable external database, if postgresql.enabled=false is set |
 | externalDatabase.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to PostgreSQL |
 | externalDatabase.existingSecretKeys.database | string | `""` |  |
 | externalDatabase.existingSecretKeys.hostname | string | `""` |  |
@@ -32,17 +39,19 @@ A peertube Helm chart for Kubernetes
 | externalDatabase.hostname | string | `"peertube-postgres-rw"` | postgresql hostname |
 | externalDatabase.password | string | `""` | postgresql password |
 | externalDatabase.username | string | `"peertube"` | postgresql username |
-| externalValkey.enabled | bool | `true` | enable external valkey/redis, if valkey.enabled=false is set |
+| externalValkey.enabled | bool | `false` | enable external valkey/redis, if valkey.enabled=false is set |
 | externalValkey.existingSecret | string | `""` | use an existing Kubernetes Secret to connect to Redis/Valkey |
 | externalValkey.existingSecretKey | string | `"valkey-password"` | key to use in an existing Kubernetes Secret to connect to Redis/Valkey |
 | externalValkey.hostname | string | `"valkey-primary"` | hostname of external valkey/redis |
 | externalValkey.password | string | `""` | valkey/redis password |
 | extraEnv | list | `[]` | env list for deployment main container |
+| extraVolumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |
+| extraVolumes | list | `[]` | Additional volumes on the output Deployment definition. |
 | fullnameOverride | string | `""` | full name override for all peertube resources |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy, set to Always if using latest and it changes frequently |
 | image.registry | string | `"docker.io"` | docker registry if not using docker.io |
 | image.repository | string | `"chocobozzz/peertube"` | docker repo |
-| image.tag | string | `"production-bookworm"` | Overrides the image tag whose default is latest |
+| image.tag | string | `""` | Overrides the image tag whose default is appVersion in Chart.yaml |
 | imagePullSecrets | list | `[]` | optional image pull secrets |
 | ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt-prod"` |  |
 | ingress.annotations."nginx.ingress.kubernetes.io/configuration-snippet" | string | `"more_set_headers \"X-Frame-Options: ALLOWALL\";\nproxy_set_header Host $host;\n"` |  |
@@ -105,9 +114,20 @@ A peertube Helm chart for Kubernetes
 | peertube.webserver_hostname | string | `"chart-example.local"` | set peertube's hostname |
 | peertube.webserver_https | bool | `true` | enable https for peertube web frontend |
 | peertube.webserver_port | int | `443` | set peertube's port |
+| persistence.accessModes | list | `[]` | access mode of the persistent volume claim, e.g. ReadWriteOnce |
+| persistence.annotations | object | `{}` | annotations to apply to the persistent volume claim |
+| persistence.enabled | bool | `false` | enable using a persistent volume claim |
+| persistence.existingClaim | string | `""` | use an exisitng persistent volume claim |
+| persistence.storage | string | `"10Gi"` | size of the persistent volume claim |
+| persistence.storageClassName | string | `""` | storage class of the persistent volume claim |
 | podAnnotations | object | `{}` | extra pod annotations for the deployment |
 | podLabels | object | `{}` | extra pod labels for the deployment |
 | podSecurityContext | object | `{}` | pod securityContext deployment's main container |
+| postgresql.auth.database | string | `"peertube_production"` |  |
+| postgresql.auth.existingSecret | string | `""` |  |
+| postgresql.auth.password | string | `""` |  |
+| postgresql.auth.username | string | `"peertube"` |  |
+| postgresql.enabled | bool | `true` | if externalDatabase.enabled is true, postgresql.enabled must be false |
 | readinessProbe | object | `{"httpGet":{"path":"/","port":"peertube"}}` | enable readinessProbe for the deployment |
 | replicaCount | int | `1` | replica count if not using autoscaling |
 | resources | object | `{"limits":{"cpu":"4000m","memory":"4Gi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | resources for the deployment |
@@ -120,8 +140,10 @@ A peertube Helm chart for Kubernetes
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `"peertube-sa"` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | tolerations | list | `[]` | tolerations of taints on a node |
-| volumeMounts | list | `[{"mountPath":"/config/production.yaml","name":"peertube-config","subPath":"production.yaml"},{"mountPath":"/data","name":"peertube-data"},{"mountPath":"/config/custom-environment-variables.yaml","name":"custom-env-vars","subPath":"custom-environment-variables.yaml"}]` | Additional volumeMounts on the output Deployment definition. |
-| volumes | list | `[{"configMap":{"name":"peertube-config"},"name":"peertube-config"},{"configMap":{"name":"custom-env-vars"},"name":"custom-env-vars"},{"name":"peertube-data","persistentVolumeClaim":{"claimName":"peertube-data"}}]` | Additional volumes on the output Deployment definition. |
+| valkey.auth.existingSecret | string | `""` | you can also specify the name of an existing Secret |
+| valkey.auth.existingSecretPasswordKey | string | `""` | key of password in existing secret |
+| valkey.auth.password | string | `""` | you must set a password; the password generated by the valkey chart will be rotated on each upgrade: |
+| valkey.enabled | bool | `true` | enable the valkey (alternative to redis) subchart |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.11.0](https://github.com/norwoodj/helm-docs/releases/v1.11.0)
