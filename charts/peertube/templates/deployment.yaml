@@ -147,14 +147,14 @@ spec:
                   name: {{ template "peertube.postgresql.secretName" . }}
                   key: {{ .Values.externalDatabase.existingSecretKeys.password | default "password" }}
 
-            # redis info
+            # valkey (redis) info
             {{- if .Values.externalValkey.enabled }}
             - name: PEERTUBE_REDIS_HOSTNAME
               value: {{ .Values.externalValkey.hostname }}
             - name: PEERTUBE_REDIS_AUTH
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "peertube.redis.secretName" . }}
+                  name: {{ template "peertube.valkey.secretName" . }}
                   key: {{ .Values.externalValkey.existingSecretKey | default "password" }}
             {{- end }}
 
