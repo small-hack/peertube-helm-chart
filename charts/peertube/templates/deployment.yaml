@@ -87,7 +87,7 @@ spec:
             - name: PEERTUBE_LOG_LEVEL
               value: {{ .Values.peertube.log_level }}
             - name: PEERTUBE_TRUST_PROXY
-              value: "['{{ .Values.peertube.trust_proxy }}']"
+              value: '["{{ .Values.peertube.trust_proxy }}"]'
             - name: PEERTUBE_WEBSERVER_HOSTNAME
               value: {{ .Values.peertube.webserver_hostname }}
             - name: PEERTUBE_WEBSERVER_PORT
