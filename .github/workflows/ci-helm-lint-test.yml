@@ -1,0 +1,54 @@
+name: Lint and Test Chart
+
+on:
+  pull_request:
+    paths:
+      - 'charts/peertube/**'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Add dependency chart repos
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.7.0
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run chart-testing (lint)
+        id: lint
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+
+      - uses: debianmaster/actions-k3s@master
+        id: k3s
+        with:
+          version: 'latest'
+
+      - name: Run chart-testing (install)
+        id: install
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+            ct install --target-branch ${{ github.event.repository.default_branch }} \
+            --helm-extra-set-args '--set=postgresql.volumePermissions.enabled=false --set=postgresql.primary.networkPolicy.enabled=false --set=peertube.hostname=peertube-test.com'
