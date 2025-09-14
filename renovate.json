@@ -13,6 +13,11 @@
     ],
     "packageRules": [
         {
+            "description": "Fix subchart archives for helm chart",
+            "matchManagers": ["helmv3"],
+            "postUpdateOptions": ["helmUpdateSubChartArchives"]
+        },
+        {
             "description": "Fix version in Chart.yaml after helmv3 dep patch updates",
             "matchManagers": ["helmv3"],
             "matchUpdateTypes": ["patch"],
@@ -43,6 +48,7 @@
         },
         { 
             "matchManagers": ["github-actions"],
+            "matchPackageNames": ["renovatebot/github-action"],
             "matchUpdateTypes": ["patch", "minor"],
             "automerge": true,
             "ignoreTests": true
