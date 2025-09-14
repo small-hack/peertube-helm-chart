@@ -3,8 +3,8 @@ name: Generate helm docs
 on:
   pull_request:
     paths:
-      - 'charts/peertube/Chart.yaml'
-      - 'charts/peertube/values.yaml'
+      - 'charts/**/Chart.yaml'
+      - 'charts/**/values.yaml'
 
 permissions:
   contents: write
