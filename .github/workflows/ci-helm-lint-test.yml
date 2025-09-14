@@ -3,7 +3,7 @@ name: Lint and Test Chart
 on:
   pull_request:
     paths:
-      - 'charts/peertube/**'
+      - 'charts/**'
 
 permissions:
   contents: read
