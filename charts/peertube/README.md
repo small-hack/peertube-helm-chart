@@ -1,6 +1,6 @@
 # peertube
 
-![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v7.3.0-bookworm](https://img.shields.io/badge/AppVersion-v7.3.0--bookworm-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v7.3.0-bookworm](https://img.shields.io/badge/AppVersion-v7.3.0--bookworm-informational?style=flat-square)
 
 A Helm chart for deploying PeerTube on Kubernetes
 
@@ -16,7 +16,7 @@ A Helm chart for deploying PeerTube on Kubernetes
 | Repository | Name | Version |
 |------------|------|---------|
 | oci://registry-1.docker.io/bitnamicharts | postgresql | 16.7.27 |
-| oci://registry-1.docker.io/bitnamicharts | valkey | 2.2.2 |
+| oci://registry-1.docker.io/bitnamicharts | valkey | 4.0.7 |
 
 ## Values
 
