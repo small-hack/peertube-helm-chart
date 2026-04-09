@@ -1,3 +1,13 @@
+# Notice of Migration
+
+We're moving this chart over to:
+https://git.smallhack.org/small-hack/peertube-helm-chart
+
+And it will be mirror to:
+https://codeberg.org/small-hack/peertube-helm-chart
+
+You can open PRs and Issues over on codeberg. 💙
+
 # PeerTube Helm Chart
 <a href="https://github.com/small-hack/peertube-helm-chart/releases"><img src="https://img.shields.io/github/v/release/small-hack/peertube-helm-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
