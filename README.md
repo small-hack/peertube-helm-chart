@@ -1,26 +1,23 @@
-# Notice of Migration
+# ⚠️ Notice of Migration
 
-We're moving this chart over to:
-https://git.smallhack.org/small-hack/peertube-helm-chart
-
-And it will be mirror to:
-https://codeberg.org/small-hack/peertube-helm-chart
+We've moved this chart to:
+https://codeberg.org/open-engineering/peertube-helm-chart
 
 You can open PRs and Issues over on codeberg. 💙
 
 # PeerTube Helm Chart
-<a href="https://github.com/small-hack/peertube-helm-chart/releases"><img src="https://img.shields.io/github/v/release/small-hack/peertube-helm-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
+<a href="https://github.com/open-engineering-nl/peertube-helm-chart/releases"><img src="https://img.shields.io/github/v/release/open-engineering-nl/peertube-helm-chart?style=plastic&labelColor=blue&color=green&logo=GitHub&logoColor=white"></a>
 
-Welcome to [small-hack/peertube-helm-chart](https://small-hack.github.io/peertube-helm-chart/), which uses the [chocobozzz/peertube](https://hub.docker.com/r/chocobozzz/peertube/tags) docker container.
+Welcome to [open-engineering-nl/peertube-helm-chart](https://open-engineering-nl.github.io/peertube-helm-chart/), which uses the [chocobozzz/peertube](https://hub.docker.com/r/chocobozzz/peertube/tags) docker container.
 
 This is a helm chart for PeerTube for use with Argo CD.
-For an example of intended use please see [small-hack/argocd-apps:peertube](https://github.com/small-hack/argocd-apps/tree/main/peertube).
+For an example of intended use please see [open-engineering-nl/argocd-apps:peertube](https://codberg.org/open-engineering/argocd-apps/src/main/peertube).
 
 > This chart is a work-in-progress and is not suitable for general use at this time - see the open issues for further information.
 
 Installation via `helm`:
 ```bash
-helm repo add peertube https://small-hack.github.io/peertube-helm-chart/
+helm repo add peertube https://open-engineering-nl.github.io/peertube-helm-chart/
 helm install peertube/peertube --generate-name
 ```
 
